@@ -10,6 +10,14 @@ cd jira-worklog-import
 composer install
 ```
 
+Create a .env file with the following:
+
+```
+JIRA_HOST="https://<SUBDOMAIN>.atlassian.net"
+JIRA_USER=""
+JIRA_PASS=""
+```
+
 Usage:
 
 * Make sure the csv file contains the following fields:
