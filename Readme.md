@@ -20,7 +20,10 @@ Usage:
   
 * Adjust column numbers manually in script.
 
-* Run
+* Do a test run, make sure TESTING = true in the script.
 ```
 php jira-worklog-import.php
 ```
+
+* Look at output to see if columns were parsed correctly.
+* Switch TESTING to false and do the final run.
