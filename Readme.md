@@ -22,4 +22,5 @@ Usage:
 
 * Run
 ```
-php 
+php jira-worklog-import.php
+```
