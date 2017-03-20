@@ -76,7 +76,7 @@ foreach ($res as $line) {
             $issueService = new IssueService();
 
             // Use $testing to test the csv reading without sending to jira
-            if (TESTING) {
+            if (!TESTING) {
                 $ret = $issueService->addWorklog($issueKey, $workLog);
                 $workLogid = $ret->{'id'};
 
