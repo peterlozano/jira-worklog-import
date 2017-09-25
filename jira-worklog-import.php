@@ -56,8 +56,10 @@ foreach ($res as $line) {
         $comment  = $line[5];
 
         // Time spent, in decimal value.
-        // TODO: Automatically convert from a H:M:S format to decimal
-        $hours = $line[13];
+        sscanf($line[11], "%d:%d:%d", $hours, $minutes, $seconds);
+        // Round hours to the nearest 15 minutes.
+        // FIXME: Make this rounding configurable.
+        $hours = round(($hours + $minutes / 60 + $seconds / 3600) / 0.25) * 0.25;
 
         // Just debug
         echo "DATE: $date_value TIME: $time_value ISSUE: $issueKey COMMENT: $comment SPENT: $hours\n";

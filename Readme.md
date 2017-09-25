@@ -24,7 +24,7 @@ Usage:
   * Date
   * Jira issue key
   * Description of the worklog
-  * Time spent
+  * Time spent (in `HH:MM:SS` format)
   
 * Adjust column numbers manually in script.
 
