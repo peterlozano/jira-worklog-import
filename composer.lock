@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "league/csv",
-            "version": "8.1.2",
+            "version": "8.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/csv.git",
-                "reference": "33447984f7a7038fefaa5a6177e8407b66bc85b4"
+                "reference": "d2aab1e7bde802582c3879acf03d92716577c76d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/csv/zipball/33447984f7a7038fefaa5a6177e8407b66bc85b4",
-                "reference": "33447984f7a7038fefaa5a6177e8407b66bc85b4",
+                "url": "https://api.github.com/repos/thephpleague/csv/zipball/d2aab1e7bde802582c3879acf03d92716577c76d",
+                "reference": "d2aab1e7bde802582c3879acf03d92716577c76d",
                 "shasum": ""
             },
             "require": {
@@ -31,7 +31,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "8.1-dev"
+                    "dev-master": "8.2-dev"
                 }
             },
             "autoload": {
@@ -61,31 +61,31 @@
                 "read",
                 "write"
             ],
-            "time": "2016-10-27T11:21:24+00:00"
+            "time": "2018-02-06T08:27:03+00:00"
         },
         {
             "name": "lesstif/php-jira-rest-client",
-            "version": "1.9.4",
+            "version": "1.19.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lesstif/php-jira-rest-client.git",
-                "reference": "f54321635afe8b38d8d16e01b8e5176a9182e8bc"
+                "reference": "0a0c6744219422b3bb53b1e347953b34fc88c2a3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lesstif/php-jira-rest-client/zipball/f54321635afe8b38d8d16e01b8e5176a9182e8bc",
-                "reference": "f54321635afe8b38d8d16e01b8e5176a9182e8bc",
+                "url": "https://api.github.com/repos/lesstif/php-jira-rest-client/zipball/0a0c6744219422b3bb53b1e347953b34fc88c2a3",
+                "reference": "0a0c6744219422b3bb53b1e347953b34fc88c2a3",
                 "shasum": ""
             },
             "require": {
                 "monolog/monolog": "~1.12",
                 "netresearch/jsonmapper": "~0.11|^1.0",
-                "php": ">=5.4.0",
-                "vlucas/phpdotenv": "~2.0"
+                "php": ">=5.5.9",
+                "vlucas/phpdotenv": "~1.0|~2.0"
             },
             "require-dev": {
                 "mockery/mockery": "^0.9.4",
-                "phpunit/phpunit": "~4.4",
+                "phpunit/phpunit": ">=5.7 <6",
                 "symfony/var-dumper": "~2.8|~3.0"
             },
             "type": "library",
@@ -96,7 +96,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "Apache 2.0"
+                "Apache-2.0"
             ],
             "authors": [
                 {
@@ -112,20 +112,20 @@
                 "jira-rest",
                 "rest"
             ],
-            "time": "2017-01-20T17:22:23+00:00"
+            "time": "2018-02-15T15:46:37+00:00"
         },
         {
             "name": "monolog/monolog",
-            "version": "1.22.0",
+            "version": "1.23.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "bad29cb8d18ab0315e6c477751418a82c850d558"
+                "reference": "fd8c787753b3a2ad11bc60c063cff1358a32a3b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/bad29cb8d18ab0315e6c477751418a82c850d558",
-                "reference": "bad29cb8d18ab0315e6c477751418a82c850d558",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/fd8c787753b3a2ad11bc60c063cff1358a32a3b4",
+                "reference": "fd8c787753b3a2ad11bc60c063cff1358a32a3b4",
                 "shasum": ""
             },
             "require": {
@@ -146,7 +146,7 @@
                 "phpunit/phpunit-mock-objects": "2.3.0",
                 "ruflin/elastica": ">=0.90 <3.0",
                 "sentry/sentry": "^0.13",
-                "swiftmailer/swiftmailer": "~5.3"
+                "swiftmailer/swiftmailer": "^5.3|^6.0"
             },
             "suggest": {
                 "aws/aws-sdk-php": "Allow sending log messages to AWS services like DynamoDB",
@@ -190,24 +190,27 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2016-11-26T00:15:39+00:00"
+            "time": "2017-06-19T01:22:40+00:00"
         },
         {
             "name": "netresearch/jsonmapper",
-            "version": "v1.1.0",
+            "version": "v1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cweiske/jsonmapper.git",
-                "reference": "2130cc7152b31fb9f60a2d6e1f631981279d3957"
+                "reference": "3868fe1128ce1169228acdb623359dca74db5ef3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cweiske/jsonmapper/zipball/2130cc7152b31fb9f60a2d6e1f631981279d3957",
-                "reference": "2130cc7152b31fb9f60a2d6e1f631981279d3957",
+                "url": "https://api.github.com/repos/cweiske/jsonmapper/zipball/3868fe1128ce1169228acdb623359dca74db5ef3",
+                "reference": "3868fe1128ce1169228acdb623359dca74db5ef3",
                 "shasum": ""
             },
+            "require": {
+                "php": ">=5.6"
+            },
             "require-dev": {
-                "phpunit/phpunit": "4.2.*",
+                "phpunit/phpunit": "~4.8.35 || ~5.7 || ~6.4",
                 "squizlabs/php_codesniffer": "~1.5"
             },
             "type": "library",
@@ -229,7 +232,7 @@
                 }
             ],
             "description": "Map nested JSON structures onto PHP classes",
-            "time": "2016-11-17T06:34:01+00:00"
+            "time": "2017-11-28T21:30:01+00:00"
         },
         {
             "name": "psr/log",
