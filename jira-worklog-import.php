@@ -19,78 +19,11 @@ if (!ini_get("auto_detect_line_endings")) {
     ini_set("auto_detect_line_endings", '1');
 }
 
-use JiraRestApi\Issue\IssueService;
-use JiraRestApi\Issue\Worklog;
-use JiraRestApi\JiraException;
+use Symfony\Component\Console\Application;
 
-use League\Csv\Reader;
+$application = new Application();
 
-const DATE_FORMAT = 'd/m/y H:i:s';
-const DATE_TIMEZONE = 'Europe/Madrid';
+$application->add(new \App\Command\TestCommand());
+$application->add(new \App\Command\ImportCommand());
 
-// Change this to false to do a real import. Make sure column numbers are ok first.
-const TESTING = true;
-
-$csv = Reader::createFromPath('timelogs.csv');
-
-/**
- * Use offset to skip the header row.
- * Use limit = 1 to test with just 1 row.
- */
-$res = $csv->setOffset(1)->setLimit(1000)->fetchAll();
-
-foreach ($res as $line) {
-    // Just debug print
-    print_r($line);
-
-    if (!empty($line[1])) {
-        // FIXME: Make this configurable somehow or autodetected from csv header.
-        $date_value = $line[7];
-        // Time is hardcoded to always the same value.
-        $time_value = "12:00:00";
-
-        // Issue key.
-        $issueKey = $line[12];
-
-        // The description of the task.
-        $comment  = $line[5];
-
-        // Time spent, in decimal value.
-        sscanf($line[11], "%d:%d:%d", $hours, $minutes, $seconds);
-        // Round hours to the nearest 15 minutes.
-        // FIXME: Make this rounding configurable.
-        $hours = round(($hours + $minutes / 60 + $seconds / 3600) / 0.25) * 0.25;
-
-        // Just debug
-        echo "DATE: $date_value TIME: $time_value ISSUE: $issueKey COMMENT: $comment SPENT: $hours\n";
-
-        // Make sure timezone is correct, it can have an impact on the day the timelog is saved into.
-        $date = DateTime::createFromFormat(DATE_FORMAT, $date_value . ' ' . $time_value, new DateTimeZone(DATE_TIMEZONE));
-
-        echo implode(', ', array($date->format('Y-m-d H:i:s'), $issueKey, $comment, $hours)) . "h\n";
-
-        try {
-            $workLog = new Worklog();
-            $workLog->setComment($comment)
-                ->setStarted($date)
-                ->setTimeSpent($hours . 'h');
-
-            $issueService = new IssueService();
-
-            // Use $testing to test the csv reading without sending to jira
-            if (!TESTING) {
-                $ret = $issueService->addWorklog($issueKey, $workLog);
-                $workLogid = $ret->{'id'};
-
-                // Show output from the api call
-                var_dump($ret);
-            }
-            else {
-                print_r($issueKey);
-                print_r($workLog);
-            }
-        } catch (JiraException $e) {
-            echo 'ERROR: ' .$e->getMessage() . "\n";
-        }
-    }
-}
+$application->run();
