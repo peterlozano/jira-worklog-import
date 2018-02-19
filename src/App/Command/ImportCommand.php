@@ -41,6 +41,13 @@ class ImportCommand extends Command
 
         $csv = Reader::createFromPath($input->getArgument('filename'));
 
+        $input_bom = $csv->getInputBOM();
+        if ($input_bom === Reader::BOM_UTF16_LE || $input_bom === Reader::BOM_UTF16_BE) {
+            $output->writeln('Converting CSV from UTF-16 to UTF-8\n');
+            $csv->appendStreamFilter('convert.iconv.UTF-16/UTF-8');
+        }
+
+
         $res = $csv
             ->setDelimiter($input->getOption('csv-delimiter'))
             ->setOffset($input->getOption('offset'))
