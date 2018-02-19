@@ -9,7 +9,8 @@
     "require": {
         "league/csv": "^8.1",
         "lesstif/php-jira-rest-client": "^1.9",
-        "symfony/console": "^3.4"
+        "symfony/console": "^3.4",
+        "vlucas/phpdotenv": "^2.4"
     },
     "autoload": {
         "psr-4": { "": "src/" }
