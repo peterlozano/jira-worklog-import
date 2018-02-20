@@ -23,7 +23,6 @@ use Symfony\Component\Console\Application;
 
 $application = new Application();
 
-$application->add(new \App\Command\TestCommand());
 $application->add(new \App\Command\ImportCommand());
 
 $application->run();
