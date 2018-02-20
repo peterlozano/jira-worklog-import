@@ -55,6 +55,10 @@ class ImportCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (!ini_get("auto_detect_line_endings")) {
+            ini_set("auto_detect_line_endings", '1');
+        }
+
         $this->config->loadOptions($input);
 
         $csv = Reader::createFromPath($input->getArgument('filename'));
