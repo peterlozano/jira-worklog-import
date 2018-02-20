@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Config\ImportConfig;
 use JiraRestApi\Issue\IssueService;
 use JiraRestApi\Issue\Worklog;
 use League\Csv\Reader;
@@ -13,43 +14,48 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-const DEFAULT_DATE_FORMAT = 'd/m/y H:i:s';
-const DEFAULT_DATE_TIMEZONE = 'Europe/Madrid';
-
 class ImportCommand extends Command
 {
+    /**
+     * @var \App\Config\ImportConfig
+     */
+    private $config;
 
-    private $csv_date_format;
-    private $csv_date_timezone;
-    private $csv_delimiter;
-    private $offset;
-    private $limit;
-    private $debug;
-
+    /**
+     * Configures the current command.
+     *
+     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
+     */
     protected function configure()
     {
-        $this->loadEnvConfig();
+        // Loads import config from .env file.
+        $this->config = new ImportConfig();
 
         $this
-            // the name of the command (the part after "bin/console")
             ->setName('app:import')
-            // the short description shown while running "php bin/console list"
             ->setDescription('Import data.')
             ->addArgument('filename', InputArgument::REQUIRED, 'The filename to import from.')
             ->addOption('real-import', 'ri', InputOption::VALUE_NONE, 'Disable the test mode and do a real import.')
-            ->addOption('csv-date-format', 'df', InputOption::VALUE_REQUIRED, 'Specify a custom date format in the csv.', $this->csv_date_format)
-            ->addOption('csv-date-timezone', 'tz', InputOption::VALUE_REQUIRED, 'Specify a custom timezone in the csv.', $this->csv_date_timezone)
-            ->addOption('csv-delimiter', 'dl', InputOption::VALUE_REQUIRED, 'Specify the csv delimiter.', $this->csv_delimiter)
-            ->addOption('offset', 'of', InputOption::VALUE_REQUIRED, 'Number of rows in the csv to skip', $this->offset)
-            ->addOption('limit', 'li', InputOption::VALUE_REQUIRED, 'Number of rows in the csv to import', $this->limit)
+            ->addOption('csv-date-format', 'df', InputOption::VALUE_REQUIRED, 'Specify a custom date format in the csv.', $this->config->getCsvDateFormat())
+            ->addOption('csv-date-timezone', 'tz', InputOption::VALUE_REQUIRED, 'Specify a custom timezone in the csv.', $this->config->getCsvDateTimezone())
+            ->addOption('csv-delimiter', 'dl', InputOption::VALUE_REQUIRED, 'Specify the csv delimiter.', $this->config->getCsvDelimiter())
+            ->addOption('offset', 'of', InputOption::VALUE_REQUIRED, 'Number of rows in the csv to skip', $this->config->getOffset())
+            ->addOption('limit', 'li', InputOption::VALUE_REQUIRED, 'Number of rows in the csv to import', $this->config->getLimit())
             ->addOption('debug', 'd', InputOption::VALUE_NONE, 'Debug mode');
-
     }
 
-
+    /**
+     * @param \Symfony\Component\Console\Input\InputInterface   $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
+     * @return int|null|void
+     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
+     * @throws \InvalidArgumentException
+     * @throws \JsonMapper_Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->loadOptions($input);
+        $this->config->loadOptions($input);
 
         $csv = Reader::createFromPath($input->getArgument('filename'));
 
@@ -59,15 +65,14 @@ class ImportCommand extends Command
             $csv->appendStreamFilter('convert.iconv.UTF-16/UTF-8');
         }
 
-
         $res = $csv
-            ->setDelimiter($this->csv_delimiter)
-            ->setOffset($this->offset)
-            ->setLimit($this->limit)
+            ->setDelimiter($this->config->getCsvDelimiter())
+            ->setOffset($this->config->getOffset())
+            ->setLimit($this->config->getLimit())
             ->fetchAll();
 
         foreach ($res as $line) {
-            if ($this->debug) {
+            if ($this->config->getDebug()) {
                 print_r($line);
             }
 
@@ -89,15 +94,15 @@ class ImportCommand extends Command
                 // FIXME: Make this rounding configurable.
                 $hours = ceil(($hours + $minutes / 60 + $seconds / 3600) / 0.25) * 0.25;
 
-                if ($this->debug) {
+                if ($this->config->getDebug()) {
                     echo "DATE: $date_value TIME: $time_value ISSUE: $issueKey COMMENT: $comment SPENT: $hours\n";
                 }
 
                 // Make sure timezone is correct, it can have an impact on the day the timelog is saved into.
                 $date = \DateTime::createFromFormat(
-                    $this->csv_date_format,
+                    $this->config->getCsvDateFormat(),
                     $date_value . ' ' . $time_value,
-                    new \DateTimeZone($this->csv_date_timezone)
+                    new \DateTimeZone($this->config->getCsvDateTimezone())
                 );
 
                 echo implode(', ', array($date->format('Y-m-d H:i:s'), $issueKey, $comment, $hours)) . "h\n";
@@ -115,12 +120,12 @@ class ImportCommand extends Command
                         $workLogid = $ret->{'id'};
 
                         // Show output from the api call
-                        if ($this->debug) {
+                        if ($this->config->getDebug()) {
                             var_dump($ret);
                         }
                     }
                     else {
-                        if ($this->debug) {
+                        if ($this->config->getDebug()) {
                             print_r($issueKey);
                             print_r($workLog);
                         }
@@ -130,160 +135,5 @@ class ImportCommand extends Command
                 }
             }
         }
-    }
-
-    private function loadEnvConfig() {
-        $this->loadDotEnv();
-
-        if ($csv_date_format = $this->env('CSV_DATE_FORMAT')) {
-            $this->csv_date_format = $csv_date_format;
-        }
-        else {
-            $this->csv_date_format = DEFAULT_DATE_FORMAT;
-        }
-
-        if ($csv_date_timezone = $this->env('CSV_DATE_TIMEZONE')) {
-            $this->csv_date_timezone = $csv_date_timezone;
-        }
-        else {
-            $this->csv_date_timezone = DEFAULT_DATE_TIMEZONE;
-        }
-
-        if ($csv_delimiter = $this->env('CSV_DELIMITER')) {
-            $this->csv_delimiter = $csv_delimiter;
-        }
-        else {
-            $this->csv_delimiter = ',';
-        }
-
-        if ($offset = $this->env('OFFSET')) {
-            $this->offset = $offset;
-        }
-        else {
-            $this->offset = 1;
-        }
-
-        if ($limit = $this->env('LIMIT')) {
-            $this->limit = $limit;
-        }
-        else {
-            $this->limit = 1000;
-        }
-
-        if ($debug = $this->env('DEBUG')) {
-            $this->debug = $debug;
-        }
-        else {
-            $this->debug = false;
-        }
-    }
-
-
-    private function loadDotEnv() {
-        // support for dotenv 1.x and 2.x. see also https://github.com/lesstif/php-jira-rest-client/issues/102
-        if (class_exists('\Dotenv\Dotenv')) {
-            $dotenv = new \Dotenv\Dotenv('.');
-
-            $dotenv->load();
-        } elseif (class_exists('\Dotenv')) {
-            \Dotenv::load('.');
-        } else {
-            throw new JiraException('can not load PHP dotenv class.!');
-        }
-    }
-
-    /**
-     * Gets the value of an environment variable. Supports boolean, empty and null.
-     *
-     * @param string $key
-     * @param mixed  $default
-     *
-     * @return mixed
-     */
-    private function env($key, $default = null)
-    {
-        $value = getenv($key);
-
-        if ($value === false) {
-            return $default;
-        }
-
-        switch (strtolower($value)) {
-            case 'true':
-            case '(true)':
-                return true;
-
-            case 'false':
-            case '(false)':
-                return false;
-
-            case 'empty':
-            case '(empty)':
-                return '';
-
-            case 'null':
-            case '(null)':
-                return;
-        }
-
-        if ($this->startsWith($value, '"') && $this->endsWith($value, '"')) {
-            return substr($value, 1, -1);
-        }
-
-        return $value;
-    }
-
-    private function loadOptions(InputInterface $input)
-    {
-        if ($input->getOption('csv-date-format')) {
-            $this->csv_date_format = $input->getOption('csv-date-format');
-        }
-        if ($input->getOption('csv-date-timezone')) {
-            $this->csv_date_timezone = $input->getOption('csv-date-timezone');
-        }
-        if ($input->getOption('limit')) {
-            $this->limit = $input->getOption('limit');
-        }
-        if ($input->getOption('offset')) {
-            $this->offset = $input->getOption('offset');
-        }
-    }
-
-    /**
-     * Determine if a given string starts with a given substring.
-     *
-     * @param string       $haystack
-     * @param string|array $needles
-     *
-     * @return bool
-     */
-    public function startsWith($haystack, $needles)
-    {
-        foreach ((array) $needles as $needle) {
-            if ($needle != '' && strpos($haystack, $needle) === 0) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Determine if a given string ends with a given substring.
-     *
-     * @param string       $haystack
-     * @param string|array $needles
-     *
-     * @return bool
-     */
-    public function endsWith($haystack, $needles)
-    {
-        foreach ((array) $needles as $needle) {
-            if ((string) $needle === substr($haystack, -strlen($needle))) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }
