@@ -2,7 +2,7 @@
 
 This script allows to import a CSV file containing worklogs into Jira.
 
-###Install:
+### Install:
 
 ```
 git clone https://github.com/peterlozano/jira-worklog-import.git
