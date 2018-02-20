@@ -8,9 +8,7 @@
  * JIRA_USER=""
  * JIRA_PASS=""
  *
- * TODO: Automatically convert H:M:S worklog spent time into decimal.
  * TODO: Automatically fetch time from Toggl.
- * TODO: Use console library to have some console help and parameters. (ie: debug, testing, source file)
  */
 
 require __DIR__ . '/vendor/autoload.php';
